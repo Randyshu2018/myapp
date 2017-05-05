@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+     <style>
+         .tb_stN1 th .delBtn {
+             border: 1px solid #ff6461;
+             padding: 4px 30px;
+             margin-top: 15px;
+             display: inline-block;
+             -webkit-border-radius: 5px;
+             -moz-border-radius: 5px;
+             border-radius: 5px;
+             color: #ff6461;
+             font-size: 13px;
+             cursor: pointer;
+         }
+         .tb_stN1 th .updBtn {
+             border: 1px solid #ff6461;
+             padding: 4px 30px;
+             margin-top: 15px;
+             display: inline-block;
+             -webkit-border-radius: 5px;
+             -moz-border-radius: 5px;
+             border-radius: 5px;
+             color: #ff6461;
+             font-size: 13px;
+             cursor: pointer;
+         }
+     </style>
+    <style type="text/css">
+	a{margin-left: 20px; text-decoration: none;}
+	a:hover{text-decoration: underline;}
+    </style>
+  </head>
+  <body>
+  <h1>Your name:   <%= user.username %></h1>
+    <p>Welcome to your home ~</p>
+    <p><a href="/logout">我要注销 </a>
+    </p>
+  <div class="container">
+      <%- message %>
+  </div>
+  <div class="tb_stN1_wrap">
+      <table class="tb_stN1" style="width: 100%;" border="1">
+          <thead>
+          <tr>
+              <th>用户名</th>
+              <th>密码</th>
+              <th>年龄</th>
+              <th>操作</th>
+          </tr>
+          </thead>
+          <tbody class="userListBody">
+          </tbody>
+      </table>
+  </div>
+  <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/jsrender.min.js"></script>
+  <script>
+      var home = {
+          home : function () {
+              $.get("/home",function(data) {
+              });
+          },
+          userList : function () {
+              $.post("/userList",function(data){
+                  var dataObj=eval(data);
+                  var nothing='<tr class="fs_tip"><td colspan="6">暂无数据</td></tr>';
+                  if(dataObj){
+                      var list=dataObj;
+                      if(0!=list.length){
+                          var content=$("#userTemplate").render(list);
+                          $(".userListBody").html(content);
+                          $(".delBtn").on('click',function(){
+                              var sid = $(this).attr("cid");
+                              home.delete("/delete",{"id":sid});
+                          });
+                          $(".updBtn").on('click',function(){
+                              var sid = $(this).attr("cid");
+                              var username =  $(this).parent().prevAll().find("input[name='username']").val();
+                              var password =  $(this).parent().prevAll().find("input[name='password']").val();
+                              var age =  $(this).parent().prevAll().find("input[name='age']").val();
+
+                              home.update("/update",{"id":sid,"username":username,"password":password,"age":age});
+                          });
+                      }else{
+                          $(".userListBody").html(nothing);
+                      }
+                  }else{
+                      $(".userListBody").html(nothing);
+                  }
+              });
+          },
+          delete : function (url,params) {
+              $.post(url,params,function(data){
+                    home.userList();
+              }).fail(function () {
+                    home.userList();
+              })
+          },
+          update : function (url,params) {
+              console.log(params);
+              $.post(url,params,function(data){
+                    console.log(data);
+//                  home.userList();
+              }).fail(function (data) {
+                    console.log(data);
+                   // home.userList();
+              })
+          }
+      }
+      $(function(){
+          home.userList();
+      });
+  </script>
+  <script id="userTemplate" type="text/x-jsrender">
+        <tr>
+	        <th><input name="username" value="{{:username}}" editable="true"/></th>
+	        <th><input name="password" value="{{:password}}" editable="true"/></th>
+	        <th><input name ="age"     value="{{:age}}"      editable="true"/></th>
+	        <th><a class="delBtn" cid="{{:id}}">删除
+	        <a class="updBtn" cid="{{:id}}">修改</a>
+	        </th>
+	    </tr>
+      </script>
+  </body>
+</html>

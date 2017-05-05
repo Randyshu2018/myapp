@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    h1= title
+    p Welcome to #{title}
+
+    if user
+        h1 Hello #{user.username} <button>logout!
+    else
+        button please login first!
+
+
+    if users != null
+      each u, i in users
+        li u.username
