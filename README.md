@@ -9,7 +9,7 @@ now follow my steps
 
 one,config your nodejs and express environment
 
-two,upzip your package and go into the project dir to run "npm install" 
+two,upzip your package and go into the project dir to run "npm install" in adition add two commands "npm express-session --save" and "npm ejs --save"
 
 three,design your mysql data struct
 
